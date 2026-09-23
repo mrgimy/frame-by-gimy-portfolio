@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Project | Frame by Gimy</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            padding: 25px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
+
+        .navbar h2 {
+            letter-spacing: 3px;
+        }
+
+        .navbar a {
+            color: #aaa;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 60px auto;
+        }
+
+        .title {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 35px;
+        }
+
+        .project-form {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 18px;
+            padding: 35px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 9px;
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            background: #090909;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #777;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        select option {
+            background: #111;
+        }
+
+        .featured-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px;
+            background: #0b0b0b;
+            border: 1px solid #222;
+            border-radius: 12px;
+            margin-bottom: 22px;
+        }
+
+        .featured-info h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .featured-info p {
+            color: #777;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .featured-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: white;
+        }
+
+        .current-media {
+            background: #0b0b0b;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .current-media p {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .current-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .current-video {
+            width: 100%;
+            max-height: 400px;
+            background: black;
+            border-radius: 10px;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .update-btn {
+            width: 100%;
+            border: none;
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .update-btn:hover {
+            background: #ddd;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .project-form {
+                padding: 25px;
+            }
+
+            .title {
+                font-size: 30px;
+            }
+        }
+
+        /* ================= ERROR MESSAGE ================= */
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 20px;
+            padding: 14px 16px;
+
+            background: rgba(255, 70, 70, 0.08);
+            color: #ff6b6b;
+
+            border: 1px solid rgba(255, 70, 70, 0.35);
+            border-radius: 10px;
+
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h2>FRAME BY GIMY</h2>
+
+    <a href="/admin">
+        ← Back to Dashboard
+    </a>
+</nav>
+
+
+<div class="container">
+
+    <h1 class="title">Edit Project</h1>
+
+    <p class="subtitle">
+        Update your portfolio project details.
+    </p>
+
+
+    <form
+            class="project-form"
+            th:action="@{/admin/projects/edit/{id}(id=${project.id})}"
+            th:object="${project}"
+            method="post"
+            enctype="multipart/form-data">
+
+
+        <!-- TITLE -->
+
+        <div class="form-group">
+
+            <label>Project Title</label>
+
+            <input
+                    type="text"
+                    th:field="*{title}"
+                    required>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+            <label>Project Description</label>
+
+            <textarea
+                    th:field="*{description}"
+                    required></textarea>
+
+        </div>
+
+
+        <!-- CATEGORY -->
+
+        <div class="form-group">
+
+            <label>Category</label>
+
+            <select th:field="*{category}" required>
+
+                <option value="Videography">
+                    Videography
+                </option>
+
+                <option value="Video Editing">
+                    Video Editing
+                </option>
+
+                <option value="Photography">
+                    Photography
+                </option>
+
+                <option value="Content Creation">
+                    Content Creation
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DISPLAY ORDER -->
+
+        <div class="form-group">
+
+            <label>Display Order</label>
+
+            <input
+                    type="number"
+                    th:field="*{displayOrder}"
+                    min="1"
+                    placeholder="Example: 1">
+
+            <p class="help-text">
+                Smaller numbers appear first.
+                Example: 1 appears before 2.
+            </p>
+
+        </div>
+
+
+        <!-- FEATURED -->
+
+        <div class="featured-box">
+
+            <div class="featured-info">
+
+                <h3>Featured Project</h3>
+
+                <p>
+                    Enable this if you want to mark this
+                    as a featured portfolio project.
+                </p>
+
+            </div>
+
+            <input
+                    type="checkbox"
+                    th:field="*{featured}">
+
+        </div>
+
+
+        <!-- CURRENT IMAGE -->
+
+        <div
+                class="current-media"
+                th:if="${project.imageUrl != null && !project.imageUrl.isEmpty()}">
+
+            <p>Current Thumbnail</p>
+
+            <img
+                    th:src="${project.imageUrl}"
+                    th:alt="${project.title}"
+                    class="current-image">
+
+        </div>
+
+
+        <!-- CHANGE IMAGE -->
+
+        <div class="form-group">
+
+            <label>Change Thumbnail / Image</label>
+
+            <input
+                    type="file"
+                    name="imageFile"
+                    accept="image/*">
+
+            <p class="help-text">
+                Leave empty to keep the current image.
+            </p>
+
+        </div>
+
+
+        <!-- CURRENT VIDEO -->
+
+        <div
+                class="current-media"
+                th:if="${project.videoUrl != null && !project.videoUrl.isEmpty()}">
+
+            <p>Current Video</p>
+
+            <video
+                    controls
+                    preload="metadata"
+                    class="current-video">
+
+                <source
+                        th:src="${project.videoUrl}"
+                        type="video/mp4">
+
+            </video>
+
+        </div>
+
+
+        <!-- CHANGE VIDEO -->
+
+        <div class="form-group">
+
+            <label>Change Video</label>
+
+            <input
+                    type="file"
+                    name="videoFile"
+                    accept="video/*">
+
+            <p class="help-text">
+                Leave empty to keep the current video.
+            </p>
+
+        </div>
+
+
+        <!-- SAVE -->
+
+        <button
+                type="submit"
+                class="update-btn">
+
+            Save Changes
+
+        </button>
+
+        <!-- ================= ERROR MESSAGE ================= -->
+
+        <div class="error-message"
+             th:if="${errorMessage != null}">
+
+            <span>⚠</span>
+
+            <span th:text="${errorMessage}">
+        Invalid file.
+    </span>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

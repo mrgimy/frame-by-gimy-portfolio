@@ -1,0 +1,102 @@
+# ==========================================
+# JAVA / MAVEN
+# ==========================================
+
+HELP.md
+target/
+*.class
+*.jar
+*.war
+*.log
+
+.mvn/wrapper/maven-wrapper.jar
+
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+
+# ==========================================
+# SPRING TOOL SUITE
+# ==========================================
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+
+# ==========================================
+# INTELLIJ IDEA
+# ==========================================
+
+.idea/
+*.iws
+*.iml
+*.ipr
+
+
+# ==========================================
+# NETBEANS
+# ==========================================
+
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+build/
+
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+
+# ==========================================
+# VS CODE
+# ==========================================
+
+.vscode/
+
+
+# ==========================================
+# USER UPLOADED FILES
+# ==========================================
+
+uploads/
+
+
+# ==========================================
+# ENVIRONMENT VARIABLES / SECRETS
+# ==========================================
+
+.env
+.env.*
+application-local.properties
+application-prod.properties
+
+
+# ==========================================
+# OPERATING SYSTEM FILES
+# ==========================================
+
+.DS_Store
+Thumbs.db
+
+
+# ==========================================
+# TEMP FILES
+# ==========================================
+
+*.tmp
+*.temp
+
+# ==========================================
+# STATIC VIDEO FILES
+# ==========================================
+
+src/main/resources/static/videos/*.mp4
+src/main/resources/static/videos/*.mov
+src/main/resources/static/videos/*.webm

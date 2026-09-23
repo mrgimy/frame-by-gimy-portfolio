@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Frame by Gimy</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #080808;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+            padding: 30px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .brand h1 {
+            font-size: 25px;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+        .brand p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .login-box {
+            background: #111;
+            border: 1px solid #262626;
+            border-radius: 18px;
+            padding: 40px;
+        }
+
+        .login-box h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .login-box .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: #0b0b0b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #777;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: black;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            background: #ddd;
+        }
+
+        .error-message {
+            background: #241010;
+            border: 1px solid #5b2020;
+            color: #ff8d8d;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .logout-message {
+            background: #102416;
+            border: 1px solid #205b32;
+            color: #8dffad;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-link a {
+            color: #999;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            color: white;
+        }
+
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 20px;
+            }
+
+            .login-box {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="brand">
+        <h1>FRAME BY GIMY</h1>
+        <p>Administration</p>
+    </div>
+
+    <div class="login-box">
+
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to access your dashboard.</p>
+
+        <div class="error-message" th:if="${param.error}">
+            Incorrect username or password.
+        </div>
+
+        <div class="logout-message" th:if="${param.logout}">
+            You have successfully logged out.
+        </div>
+
+        <form th:action="@{/admin/login}" method="post">
+
+            <div class="form-group">
+                <label>Username</label>
+                <input
+                        type="text"
+                        name="username"
+                        placeholder="Enter username"
+                        required
+                        autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required
+                        autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="login-btn">
+                Sign In
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="back-link">
+        <a href="/">← Back to Website</a>
+    </div>
+
+</div>
+
+</body>
+</html>

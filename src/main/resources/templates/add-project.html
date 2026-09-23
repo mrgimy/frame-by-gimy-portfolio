@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Project | Frame by Gimy</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            padding: 25px 7%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom: 1px solid #222;
+        }
+
+        .navbar h2 {
+            letter-spacing: 3px;
+        }
+
+        .navbar a {
+            color: #aaa;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            color: white;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+
+            margin: 60px auto;
+        }
+
+        .title {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 35px;
+        }
+
+        /* ================= FORM ================= */
+
+        .project-form {
+            background: #111;
+
+            border: 1px solid #222;
+            border-radius: 18px;
+
+            padding: 35px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+
+            width: 100%;
+
+            padding: 14px;
+
+            background: #090909;
+            color: white;
+
+            border: 1px solid #333;
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+
+            border-color: #777;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        select option {
+            background: #111;
+        }
+
+        /* ================= FEATURED ================= */
+
+        .featured-box {
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 18px;
+
+            background: #0b0b0b;
+
+            border: 1px solid #222;
+            border-radius: 12px;
+
+            margin-bottom: 22px;
+        }
+
+        .featured-info h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .featured-info p {
+            color: #777;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .featured-box input[type="checkbox"] {
+
+            width: 20px;
+            height: 20px;
+
+            cursor: pointer;
+
+            accent-color: white;
+        }
+
+        /* ================= HELP TEXT ================= */
+
+        .help-text {
+            color: #666;
+
+            font-size: 12px;
+
+            margin-top: 8px;
+
+            line-height: 1.5;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .save-btn {
+
+            width: 100%;
+
+            border: none;
+
+            background: white;
+            color: black;
+
+            padding: 15px;
+
+            border-radius: 30px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .save-btn:hover {
+
+            background: #ddd;
+
+            transform: translateY(-2px);
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            .project-form {
+                padding: 25px;
+            }
+
+            .title {
+                font-size: 30px;
+            }
+
+        }
+
+        /* ================= ERROR MESSAGE ================= */
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 20px;
+            padding: 14px 16px;
+
+            background: rgba(255, 70, 70, 0.08);
+            color: #ff6b6b;
+
+            border: 1px solid rgba(255, 70, 70, 0.35);
+            border-radius: 10px;
+
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <h2>FRAME BY GIMY</h2>
+
+    <a href="/admin">
+        ← Back to Dashboard
+    </a>
+
+</nav>
+
+
+<!-- ================= PAGE ================= -->
+
+<div class="container">
+
+
+    <h1 class="title">
+        Add New Project
+    </h1>
+
+
+    <p class="subtitle">
+        Add a new project to your portfolio.
+    </p>
+
+
+    <!-- ================= FORM ================= -->
+
+    <form
+            class="project-form"
+            th:action="@{/admin/projects/add}"
+            th:object="${project}"
+            method="post"
+            enctype="multipart/form-data">
+
+
+        <!-- PROJECT TITLE -->
+
+        <div class="form-group">
+
+            <label>
+                Project Title
+            </label>
+
+            <input
+                    type="text"
+                    th:field="*{title}"
+                    placeholder="Example: Cinematic Car Reel"
+                    required>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+            <label>
+                Project Description
+            </label>
+
+            <textarea
+                    th:field="*{description}"
+                    placeholder="Write a short description about this project..."
+                    required></textarea>
+
+        </div>
+
+
+        <!-- CATEGORY -->
+
+        <div class="form-group">
+
+            <label>
+                Category
+            </label>
+
+            <select
+                    th:field="*{category}"
+                    required>
+
+                <option value="">
+                    Select Category
+                </option>
+
+                <option value="Videography">
+                    Videography
+                </option>
+
+                <option value="Video Editing">
+                    Video Editing
+                </option>
+
+                <option value="Photography">
+                    Photography
+                </option>
+
+                <option value="Content Creation">
+                    Content Creation
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DISPLAY ORDER -->
+
+        <div class="form-group">
+
+            <label>
+                Display Order
+            </label>
+
+            <input
+                    type="number"
+                    th:field="*{displayOrder}"
+                    placeholder="Example: 1"
+                    min="1">
+
+            <p class="help-text">
+                Smaller numbers will appear first.
+                Example: 1 appears before 2.
+            </p>
+
+        </div>
+
+
+        <!-- FEATURED -->
+
+        <div class="featured-box">
+
+            <div class="featured-info">
+
+                <h3>
+                    Featured Project
+                </h3>
+
+                <p>
+                    Enable this if this is one of your
+                    featured portfolio projects.
+                </p>
+
+            </div>
+
+            <input
+                    type="checkbox"
+                    th:field="*{featured}">
+
+        </div>
+
+
+        <!-- IMAGE -->
+
+        <div class="form-group">
+
+            <label>
+                Project Thumbnail / Image
+            </label>
+
+            <input
+                    type="file"
+                    name="imageFile"
+                    accept="image/*"
+                    required>
+
+            <p class="help-text">
+                Recommended: landscape image with good quality.
+            </p>
+
+        </div>
+
+
+        <!-- VIDEO -->
+
+        <div class="form-group">
+
+            <label>
+                Project Video
+            </label>
+
+            <input
+                    type="file"
+                    name="videoFile"
+                    accept="video/*">
+
+            <p class="help-text">
+                Upload the video you want visitors to view.
+            </p>
+
+        </div>
+
+
+        <!-- SAVE BUTTON -->
+
+        <button
+                type="submit"
+                class="save-btn">
+
+            Add Project
+
+        </button>
+
+        <!-- ================= ERROR MESSAGE ================= -->
+
+        <div class="error-message"
+             th:if="${errorMessage != null}">
+
+            <span>⚠</span>
+
+            <span th:text="${errorMessage}">
+        Invalid file.
+    </span>
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Frame by Gimy | Portfolio</title>
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+
+<nav>
+
+  <div class="logo">
+    FRAME BY GIMY
+  </div>
+
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="home">
+
+  <div class="hero-content">
+
+    <h1>Frame by Gimy</h1>
+
+    <h2>Multimedia Creator</h2>
+
+    <p>
+      Capturing moments, creating stories and transforming
+      ideas into visual experiences.
+    </p>
+
+    <a href="#projects" class="btn">
+      View My Work
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section class="about" id="about">
+
+  <h2>About Me</h2>
+
+  <p>
+    I'm a multimedia creator passionate about videography,
+    video editing and creative visual content.
+    I create engaging digital experiences through
+    storytelling and visual creativity.
+  </p>
+
+</section>
+
+
+<!-- ================= PROJECTS ================= -->
+
+<section class="projects" id="projects">
+
+  <div class="section-heading">
+
+    <p>MY WORK</p>
+
+    <h2>Featured Projects</h2>
+
+  </div>
+
+
+  <!-- Projects loaded from MySQL -->
+
+  <div class="project-container">
+
+
+    <!-- One card is automatically created for every project -->
+
+    <div
+            class="project-card"
+            th:each="project : ${projects}">
+      <div class="featured-badge" th:if="${project.featured}">
+        ★ FEATURED
+      </div>
+
+
+      <!-- Project Image -->
+
+      <img
+              th:if="${project.imageUrl != null && !project.imageUrl.isEmpty()}"
+              th:src="${project.imageUrl}"
+              th:alt="${project.title}">
+
+
+      <!-- Project Information -->
+
+      <div class="project-info">
+
+
+        <!-- Category -->
+
+        <span th:text="${project.category}">
+          CATEGORY
+        </span>
+
+
+        <!-- Title -->
+
+        <h3 th:text="${project.title}">
+          Project Title
+        </h3>
+
+
+        <!-- Description -->
+
+        <p th:text="${project.description}">
+          Project Description
+        </p>
+
+
+        <!-- View Project Button -->
+
+        <a
+                th:if="${project.videoUrl != null && !project.videoUrl.isEmpty()}"
+                href="#"
+                class="project-link"
+                th:attr="data-video=${project.videoUrl}"
+                onclick="openProjectVideo(this); return false;">
+
+          View Project →
+
+        </a>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- Show this only when database has no projects -->
+
+    <div
+            class="no-projects"
+            th:if="${#lists.isEmpty(projects)}">
+
+      <p>
+        No projects available yet.
+      </p>
+
+    </div>
+
+
+  </div>
+
+</section>
+
+
+<!-- ================= CONTACT ================= -->
+
+<section class="contact" id="contact">
+
+  <p class="small-title">
+    GET IN TOUCH
+  </p>
+
+  <h2>
+    Let's Work Together
+  </h2>
+
+  <p class="contact-text">
+    Have a project in mind?
+    Let's create something amazing together.
+  </p>
+
+
+  <!-- Contact Form -->
+
+  <form
+          class="contact-form"
+          th:action="@{/contact}"
+          method="post">
+
+
+    <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            required>
+
+
+    <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            required>
+
+
+    <textarea
+            name="message"
+            placeholder="Your Message"
+            rows="6"
+            required></textarea>
+
+
+    <button type="submit">
+      Send Message
+    </button>
+
+
+  </form>
+
+
+  <!-- ================= SOCIAL MEDIA ================= -->
+
+  <div class="social-links">
+
+
+    <a
+            href="https://instagram.com/YOUR_USERNAME"
+            target="_blank"
+            rel="noopener noreferrer">
+
+      Instagram
+
+    </a>
+
+
+    <a
+            href="https://youtube.com/@YOUR_USERNAME"
+            target="_blank"
+            rel="noopener noreferrer">
+
+      YouTube
+
+    </a>
+
+
+    <a
+            href="https://www.tiktok.com/@YOUR_USERNAME"
+            target="_blank"
+            rel="noopener noreferrer">
+
+      TikTok
+
+    </a>
+
+
+    <a
+            href="https://www.facebook.com/YOUR_USERNAME"
+            target="_blank"
+            rel="noopener noreferrer">
+
+      Facebook
+
+    </a>
+
+
+  </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+  <p>
+    © 2026 Frame by Gimy. All Rights Reserved.
+  </p>
+
+</footer>
+
+
+<!-- ================= VIDEO POPUP ================= -->
+
+<div
+        class="video-popup"
+        id="videoPopup">
+
+
+  <div class="video-popup-content">
+
+
+    <!-- Close Button -->
+
+    <button
+            class="close-video"
+            type="button"
+            onclick="closeVideo()">
+
+      &times;
+
+    </button>
+
+
+    <!-- Video Player -->
+
+    <video
+            id="projectVideo"
+            controls
+            playsinline>
+
+      Your browser does not support video playback.
+
+    </video>
+
+
+  </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script th:src="@{/js/script.js}"></script>
+
+
+<script>
+
+  function openProjectVideo(element) {
+
+    const videoUrl = element.getAttribute("data-video");
+
+    if (videoUrl) {
+      openVideo(videoUrl);
+    }
+
+  }
+
+</script>
+
+
+</body>
+
+</html>
