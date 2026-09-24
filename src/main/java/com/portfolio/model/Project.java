@@ -17,9 +17,19 @@ public class Project {
 
     private String category;
 
+    // Cloudinary secure image URL
+    @Column(length = 1000)
     private String imageUrl;
 
+    // Cloudinary image public ID
+    private String imagePublicId;
+
+    // Cloudinary secure video URL
+    @Column(length = 1000)
     private String videoUrl;
+
+    // Cloudinary video public ID
+    private String videoPublicId;
 
     // Featured project or normal project
     private boolean featured;
@@ -95,12 +105,30 @@ public class Project {
     }
 
 
+    public String getImagePublicId() {
+        return imagePublicId;
+    }
+
+    public void setImagePublicId(String imagePublicId) {
+        this.imagePublicId = imagePublicId;
+    }
+
+
     public String getVideoUrl() {
         return videoUrl;
     }
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+
+    public String getVideoPublicId() {
+        return videoPublicId;
+    }
+
+    public void setVideoPublicId(String videoPublicId) {
+        this.videoPublicId = videoPublicId;
     }
 
 

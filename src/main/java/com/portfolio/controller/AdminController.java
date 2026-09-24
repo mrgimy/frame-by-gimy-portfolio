@@ -1,5 +1,7 @@
 package com.portfolio.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.portfolio.model.Project;
 import com.portfolio.repository.ContactRepository;
 import com.portfolio.repository.ProjectRepository;
@@ -10,23 +12,28 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.util.Map;
 
 @Controller
 public class AdminController {
 
     private final ContactRepository contactRepository;
     private final ProjectRepository projectRepository;
+    private final Cloudinary cloudinary;
 
-    public AdminController(ContactRepository contactRepository,
-                           ProjectRepository projectRepository) {
+
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+
+    public AdminController(
+            ContactRepository contactRepository,
+            ProjectRepository projectRepository,
+            Cloudinary cloudinary) {
 
         this.contactRepository = contactRepository;
         this.projectRepository = projectRepository;
+        this.cloudinary = cloudinary;
     }
 
 
@@ -126,63 +133,53 @@ public class AdminController {
         }
 
 
-        Path imageDirectory =
-                Paths.get("uploads/images");
-
-        Path videoDirectory =
-                Paths.get("uploads/videos");
-
-        Files.createDirectories(imageDirectory);
-        Files.createDirectories(videoDirectory);
-
-
-        // ================= SAVE IMAGE =================
+        // ================= UPLOAD IMAGE =================
 
         if (!imageFile.isEmpty()) {
 
-            String imageName =
-                    UUID.randomUUID()
-                            + "_"
-                            + imageFile.getOriginalFilename();
-
-            Path imagePath =
-                    imageDirectory.resolve(imageName);
-
-            Files.copy(
-                    imageFile.getInputStream(),
-                    imagePath,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
+            Map<?, ?> imageResult =
+                    cloudinary.uploader().upload(
+                            imageFile.getBytes(),
+                            ObjectUtils.asMap(
+                                    "folder", "frame-by-gimy/images",
+                                    "resource_type", "image"
+                            )
+                    );
 
             project.setImageUrl(
-                    "/uploads/images/" + imageName
+                    imageResult.get("secure_url").toString()
+            );
+
+            project.setImagePublicId(
+                    imageResult.get("public_id").toString()
             );
         }
 
 
-        // ================= SAVE VIDEO =================
+        // ================= UPLOAD VIDEO =================
 
         if (!videoFile.isEmpty()) {
 
-            String videoName =
-                    UUID.randomUUID()
-                            + "_"
-                            + videoFile.getOriginalFilename();
-
-            Path videoPath =
-                    videoDirectory.resolve(videoName);
-
-            Files.copy(
-                    videoFile.getInputStream(),
-                    videoPath,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
+            Map<?, ?> videoResult =
+                    cloudinary.uploader().upload(
+                            videoFile.getBytes(),
+                            ObjectUtils.asMap(
+                                    "folder", "frame-by-gimy/videos",
+                                    "resource_type", "video"
+                            )
+                    );
 
             project.setVideoUrl(
-                    "/uploads/videos/" + videoName
+                    videoResult.get("secure_url").toString()
+            );
+
+            project.setVideoPublicId(
+                    videoResult.get("public_id").toString()
             );
         }
 
+
+        // ================= SAVE DATABASE =================
 
         projectRepository.save(project);
 
@@ -210,7 +207,7 @@ public class AdminController {
 
     @PostMapping("/admin/projects/delete/{id}")
     public String deleteProject(
-            @PathVariable Long id) {
+            @PathVariable Long id) throws IOException {
 
         Project project =
                 projectRepository.findById(id)
@@ -221,19 +218,24 @@ public class AdminController {
                         );
 
 
-        // Delete image
-        deleteUploadedFile(
-                project.getImageUrl()
+        // ================= DELETE CLOUDINARY IMAGE =================
+
+        deleteCloudinaryFile(
+                project.getImagePublicId(),
+                "image"
         );
 
 
-        // Delete video
-        deleteUploadedFile(
-                project.getVideoUrl()
+        // ================= DELETE CLOUDINARY VIDEO =================
+
+        deleteCloudinaryFile(
+                project.getVideoPublicId(),
+                "video"
         );
 
 
-        // Delete database record
+        // ================= DELETE DATABASE RECORD =================
+
         projectRepository.delete(project);
 
         return "redirect:/admin";
@@ -280,7 +282,6 @@ public class AdminController {
     ) throws IOException {
 
 
-        // Get existing project first
         Project existingProject =
                 projectRepository.findById(id)
                         .orElseThrow(() ->
@@ -365,41 +366,29 @@ public class AdminController {
 
         if (!imageFile.isEmpty()) {
 
-            Path imageDirectory =
-                    Paths.get("uploads/images");
-
-            Files.createDirectories(
-                    imageDirectory
-            );
-
-
-            // Save new image first
-            String imageName =
-                    UUID.randomUUID()
-                            + "_"
-                            + imageFile.getOriginalFilename();
-
-            Path imagePath =
-                    imageDirectory.resolve(
-                            imageName
+            Map<?, ?> imageResult =
+                    cloudinary.uploader().upload(
+                            imageFile.getBytes(),
+                            ObjectUtils.asMap(
+                                    "folder", "frame-by-gimy/images",
+                                    "resource_type", "image"
+                            )
                     );
 
-            Files.copy(
-                    imageFile.getInputStream(),
-                    imagePath,
-                    StandardCopyOption.REPLACE_EXISTING
+
+            // Upload succeeded, so old image can now be removed
+            deleteCloudinaryFile(
+                    existingProject.getImagePublicId(),
+                    "image"
             );
 
 
-            // Delete old image
-            deleteUploadedFile(
-                    existingProject.getImageUrl()
-            );
-
-
-            // Set new URL
             existingProject.setImageUrl(
-                    "/uploads/images/" + imageName
+                    imageResult.get("secure_url").toString()
+            );
+
+            existingProject.setImagePublicId(
+                    imageResult.get("public_id").toString()
             );
         }
 
@@ -410,44 +399,34 @@ public class AdminController {
 
         if (!videoFile.isEmpty()) {
 
-            Path videoDirectory =
-                    Paths.get("uploads/videos");
-
-            Files.createDirectories(
-                    videoDirectory
-            );
-
-
-            // Save new video first
-            String videoName =
-                    UUID.randomUUID()
-                            + "_"
-                            + videoFile.getOriginalFilename();
-
-            Path videoPath =
-                    videoDirectory.resolve(
-                            videoName
+            Map<?, ?> videoResult =
+                    cloudinary.uploader().upload(
+                            videoFile.getBytes(),
+                            ObjectUtils.asMap(
+                                    "folder", "frame-by-gimy/videos",
+                                    "resource_type", "video"
+                            )
                     );
 
-            Files.copy(
-                    videoFile.getInputStream(),
-                    videoPath,
-                    StandardCopyOption.REPLACE_EXISTING
+
+            // Upload succeeded, so old video can now be removed
+            deleteCloudinaryFile(
+                    existingProject.getVideoPublicId(),
+                    "video"
             );
 
 
-            // Delete old video
-            deleteUploadedFile(
-                    existingProject.getVideoUrl()
-            );
-
-
-            // Set new URL
             existingProject.setVideoUrl(
-                    "/uploads/videos/" + videoName
+                    videoResult.get("secure_url").toString()
+            );
+
+            existingProject.setVideoPublicId(
+                    videoResult.get("public_id").toString()
             );
         }
 
+
+        // ================= SAVE DATABASE =================
 
         projectRepository.save(
                 existingProject
@@ -473,69 +452,39 @@ public class AdminController {
                 existingProject.getImageUrl()
         );
 
+        submittedProject.setImagePublicId(
+                existingProject.getImagePublicId()
+        );
+
         submittedProject.setVideoUrl(
                 existingProject.getVideoUrl()
+        );
+
+        submittedProject.setVideoPublicId(
+                existingProject.getVideoPublicId()
         );
     }
 
 
     // =====================================================
-    // DELETE UPLOADED FILE
+    // DELETE CLOUDINARY FILE
     // =====================================================
 
-    private void deleteUploadedFile(
-            String fileUrl) {
+    private void deleteCloudinaryFile(
+            String publicId,
+            String resourceType) throws IOException {
 
-        if (fileUrl == null ||
-                fileUrl.isBlank()) {
-
+        if (publicId == null || publicId.isBlank()) {
             return;
         }
 
-
-        // Only delete files inside /uploads/
-        if (!fileUrl.startsWith("/uploads/")) {
-
-            return;
-        }
-
-
-        try {
-
-            String relativePath =
-                    fileUrl.substring(
-                            "/uploads/".length()
-                    );
-
-            Path uploadRoot =
-                    Paths.get("uploads")
-                            .toAbsolutePath()
-                            .normalize();
-
-            Path filePath =
-                    uploadRoot
-                            .resolve(relativePath)
-                            .normalize();
-
-
-            // Prevent path traversal
-            if (!filePath.startsWith(uploadRoot)) {
-
-                return;
-            }
-
-
-            Files.deleteIfExists(
-                    filePath
-            );
-
-        } catch (IOException e) {
-
-            System.err.println(
-                    "Could not delete uploaded file: "
-                            + fileUrl
-            );
-        }
+        cloudinary.uploader().destroy(
+                publicId,
+                ObjectUtils.asMap(
+                        "resource_type", resourceType,
+                        "invalidate", true
+                )
+        );
     }
 
 
@@ -546,9 +495,7 @@ public class AdminController {
     private boolean isValidImage(
             MultipartFile file) {
 
-        if (file == null ||
-                file.isEmpty()) {
-
+        if (file == null || file.isEmpty()) {
             return true;
         }
 
@@ -556,7 +503,6 @@ public class AdminController {
                 file.getContentType();
 
         if (contentType == null) {
-
             return false;
         }
 
@@ -573,9 +519,7 @@ public class AdminController {
     private boolean isValidVideo(
             MultipartFile file) {
 
-        if (file == null ||
-                file.isEmpty()) {
-
+        if (file == null || file.isEmpty()) {
             return true;
         }
 
@@ -583,7 +527,6 @@ public class AdminController {
                 file.getContentType();
 
         if (contentType == null) {
-
             return false;
         }
 
